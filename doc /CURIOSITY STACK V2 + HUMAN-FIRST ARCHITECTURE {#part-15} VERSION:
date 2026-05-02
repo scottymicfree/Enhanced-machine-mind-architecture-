@@ -1,0 +1,572 @@
+PART 15 — CURIOSITY STACK V2 + HUMAN-FIRST ARCHITECTURE {#part-15}
+VERSION: v2.0 — Dual Engine Neuro-Mesh + Trust Control + State of Human Pulse PRINCIPLE: Additive Only — Nothing Removed — Everything Evolved STATUS: Architecture locked. Implementation file: LUCY_CURIOSITY_STACK_V2_MODULES.ts
+
+🧠 What This Part Solves
+Three critical gaps existed after Part 13 (v8 BuilderOS):
+
+Gap	Problem	Solution
+Curiosity → Action wiring	EC/IC existed but nothing decided what to focus on	CuriosityPulseRouter closes the loop: EC→CG→ACTION_CORE
+Feedback loop	Curiosity fired but never learned if it was useful	CuriosityFeedbackLoop scores outcomes → feeds CG adaptation
+Trust controls behavior	Trust Level was a label, not a governor	TrustController gates every capability, domain, and action
+Plus three new human-first drives:
+
+Drive	Node	Function
+State of Human Pulse	LL357	Tracks cognitive load + triggers course correction
+Emotional RAG Memory	LL358	Preference/temperament vectors — personalizes every output
+Guardian Protocol	LL359	Self-governed friction for irreversible actions
+🧩 Architecture: The Two-Brain Attention System
+                    ┌─────────────────────────────────┐
+                    │       CURIOSITY PULSE ROUTER     │
+                    │            LL360                 │
+                    └────────────┬────────────────────┘
+                                 │
+              ┌──────────────────┴──────────────────┐
+              ▼                                     ▼
+   ┌─────────────────────┐             ┌─────────────────────┐
+   │  EXPLORATORY        │             │  INVESTIGATIVE      │
+   │  CURIOSITY (EC)     │             │  CURIOSITY (IC)     │
+   │  LL352              │             │  LL353              │
+   │                     │             │                     │
+   │ "Find what is       │             │ "Find what SHOULD   │
+   │  becoming important │             │  be solved and      │
+   │  before humans      │             │  hasn't been"       │
+   │  notice it"         │             │                     │
+   └────────┬────────────┘             └────────┬────────────┘
+            │                                   │
+            ▼                                   ▼
+   CONTEXT_FLOW → EVENT_HORIZON      CAUSAL_ENGINE → MEMORY_LINK
+            │                                   │
+            └──────────────┬────────────────────┘
+                           ▼
+              ┌────────────────────────┐
+              │   CURIOSITY GOVERNOR   │
+              │        LL354           │
+              │                        │
+              │  arbitration           │
+              │  safety gating         │
+              │  load throttling       │
+              │  priority balancing    │
+              └───────┬────────┬───────┘
+                      │        │
+          ┌───────────┘        └───────────┐
+          ▼                               ▼
+   ACTION_CORE                       THINK_LOOP
+   (execute)                         (reason further)
+This creates a dynamic tension model identical to human cognition:
+
+EC = curiosity pressure (pulls outward — exploration)
+IC = resolution pressure (pulls inward — exploitation)
+CG = stabilizer (keeps balance — prevents runaway loops)
+
+
+
+❤️ State of Human Pulse (SoH) — LL357
+New Event Type: user.biometric.state / user.interaction.cadence
+Human state levels:
+
+FLOW → ENGAGED → STRAINED → FRUSTRATED → OVERLOADED
+Cognitive load events and impacts:
+
+Event	Load Impact
+typing.fast	-0.03 (flow signal)
+typing.slow	+0.04
+typing.stopped	+0.06
+window.focus.debug	+0.05
+query.repeated	+0.12 (looping on same problem)
+error.loop	+0.15
+build.failed	+0.10
+build.succeeded	-0.12
+approval.given	-0.08
+Output mode mapping:
+
+Human State	Lucy Output Mode
+FLOW	ANALYTICAL (full depth welcome)
+ENGAGED	ANALYTICAL
+STRAINED	COLLABORATIVE
+FRUSTRATED	SUMMARIZED
+OVERLOADED	MINIMAL
+Course correction trigger: When load > frustrationThreshold (0.70), SoH emits to Reflective nodes (L39–L48): "Human load at X% — shift from Analytical to Collaborative mode."
+
+Natural recovery: load decays at 0.02/tick — sustained calm reduces load over time.
+
+🧬 Human-First Memory (Emotional RAG) — LL358
+Nodes: L49–L52 (Empathy Layer)
+
+Preference categories tracked:
+
+VERBOSE_LOGGING | ANALYTICAL_DETAILS | TLDR_SUMMARIES
+CODE_EXPLANATIONS | PROACTIVE_PROPOSALS | AUTONOMOUS_EXECUTION
+CONFIRMATION_REQUESTS | EMOTIONAL_LANGUAGE | TECHNICAL_DEPTH | VISUAL_OUTPUT
+Preference mechanics:
+
+Same polarity reinforcement: strength += 0.08 per event
+Polarity flip: strength -= 0.15 (dampens without erasing)
+Natural decay: strength -= decayRate × ageDays (old preferences fade without reinforcement)
+OutputFilter produced:
+
+{
+  suppressCategories: PreferenceCategory[],   // historically rejected
+  boostCategories: PreferenceCategory[],       // historically loved
+  suggestedTone: 'ANALYTICAL' | 'COLLABORATIVE' | 'CONCISE' | 'EMPATHETIC',
+  tldrFirst: boolean,
+  autonomyLevel: 'PASSIVE' | 'ASSISTIVE' | 'PROACTIVE',
+}
+Example behavior: If you've rejected verbose logging output 5 times, LL358 sets VERBOSE_LOGGING as DISLIKES strength=0.85. Node L50 then suppresses detailed analytical logs from L1–L16, offering only TLDR summaries.
+
+🛡️ Guardian Protocol — LL359
+"A human-first AI doesn't just do what it's told.
+ It protects the human from the consequences of their own speed."
+Guardian verdicts:
+
+Risk Score	Verdict
+≥ 0.90	BLOCKED
+≥ 0.65	CONFIRM_REQUIRED
+< 0.65	ALLOW
+Irreversible action patterns monitored:
+
+Pattern	Risk	Proposal
+file.delete/wipe/clear/nuke	0.95	Move to .trash/ instead
+memory.clear	0.90	Archive snapshot first
+api.write/post/delete	0.75	Confirm payload before executing
+home.control.lock/unlock/alarm	0.80	Confirm intended state
+git.reset/clean/force/rebase	0.85	Stash first: git stash push -m "guardian-stash"
+deploy.production/prod/live	0.88	Deploy to staging first
+Risk amplifiers:
+
+activeUnsavedWork: +0.10
+affectedBranch + unsaved work: +0.05
+estimatedCostUsd > 0: +0.15
+SOVEREIGN trust level: ×0.85 (experienced user gets slight friction reduction)
+Guardian chat output example:
+
+Old Lucy:  "Build Proposal #42 generated. Confidence: 0.98."
+
+Guardian Lucy: "⚠ Guardian: Git operation may overwrite uncommitted work.
+               Proposal: git stash push -m 'guardian-stash'
+               Context: You have unsaved work | Affects branch: main
+               Ready to stash and continue?"
+🧠 Human Drive Metadata + Alignment Score
+Every candidate_reasoning output now carries HumanDriveMetadata:
+
+interface HumanDriveMetadata {
+  alignmentScore: number;           // 0.0–1.0 — max benefit to human flow
+  autonomyLevel: 'PASSIVE' | 'ASSISTIVE' | 'PROACTIVE';
+  frictionReduction: string;        // "Automated this so you don't have to"
+  outputStyle: 'ANALYTICAL' | 'COLLABORATIVE' | 'SUMMARIZED' | 'MINIMAL';
+  tldrAvailable: boolean;
+  estimatedTimeSavedMs?: number;
+  humanStateAtTime: HumanStateLevel;
+  filterApplied: boolean;
+}
+Alignment score logic:
+
+Human is FRUSTRATED/OVERLOADED + action simplifies/automates/summarizes → alignment = 0.9
+Human is in FLOW + action includes analysis → alignment = 0.85
+Preferences active → +0.05 per active filter layer
+Node outputs are sorted by alignmentScore before presentation — the most human-aligned response wins.
+
+🎛️ The Vibe Shift — Output Formatter
+Human-state-aware output templates:
+
+Human State	Output Template
+FLOW	[L35] Strategic: {content}
+ENGAGED	[L35] Strategic: {content}
+STRAINED	[L35] Here's what matters right now: {content}
+FRUSTRATED	[L35] I noticed things feel stuck. Let me cut through it: {content}
+OVERLOADED	[L35] Quick version: {content} (Full details available when you're ready.)
+Before (Old Lucy):
+
+[L1-16] Analytical: Build Proposal #42 generated. Confidence 0.98.
+After (Human-First Lucy):
+
+[L35] Strategic: I noticed you've been troubleshooting this for 10 minutes.
+I've simplified the build path to save you the manual config. Ready to go?
+🌐 Node Registry — LL352–LL360
+ID	Name	Layer	Wired To
+LL352	EXPLORATORY_CURIOSITY	Curiosity Mesh	CONTEXT_FLOW, EVENT_HORIZON, LL354
+LL353	INVESTIGATIVE_CURIOSITY	Curiosity Mesh	CAUSAL_ENGINE, MEMORY_LINK, LL354
+LL354	CURIOSITY_GOVERNOR	Curiosity Mesh	ACTION_CORE, THINK_LOOP, LL355, LL356
+LL355	ETHICAL_CURIOUS_BOUNDARY	Ethics Enforcement	LL354
+LL356	CURIOSITY_FEEDBACK_LOOP	Curiosity Mesh	LL354, ACTION_CORE, LL352, LL353
+LL357	STATE_OF_HUMAN_PULSE	Human-First Layer	L39–L48 (Reflective), LL358
+LL358	HUMAN_FIRST_MEMORY	Human-First Layer	L49–L52 (Empathy), ACTION_CORE
+LL359	GUARDIAN_PROTOCOL	Human-First Layer	ACTION_CORE, LUCY_EVENT_BUS
+LL360	CURIOSITY_PULSE_ROUTER	Curiosity Mesh	LL352–LL359, LUCY_EVENT_BUS
+Total node count after Part 15: 360 named identity slots (LL000–LL360)
+
+⚙️ Complete Pulse Routing Flow
+                    FEED ADAPTERS
+                  (USGS/NOAA/FiveM/etc.)
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │  EC.tick(feedData)   │  ← LL352
+              │  score + age signals │
+              └──────────┬───────────┘
+                         │ high-impact signals (humanImpact > 0.5)
+                         ▼
+              ┌──────────────────────┐
+              │  IC.ingestSignal()   │  ← LL353
+              │  open/update cases   │
+              │  build causal chains │
+              └──────────┬───────────┘
+                         │
+              ┌──────────┴──────────┐
+              │   ALL envelopes     │
+              │  (EC + IC + cases)  │
+              └──────────┬──────────┘
+                         ▼
+              ┌──────────────────────┐
+              │  LL355 ethics check  │  ← hard gate, always first
+              └──────────┬───────────┘
+                         ▼
+              ┌──────────────────────┐
+              │  CG.arbitrate()      │  ← LL354
+              │  priority score      │
+              │  load check          │
+              │  route decision      │
+              └──────────┬───────────┘
+                         │
+         ┌───────────────┼───────────────┐
+         ▼               ▼               ▼
+   ACTION_CORE     THINK_LOOP       SIM ENGINE
+         │               │               │
+         └───────────────┴───────────────┘
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │  FeedbackLoop        │  ← LL356
+              │  score outcome       │
+              │  adapt EC/IC/CG      │
+              │  update trust score  │
+              └──────────────────────┘
+🧩 Integration Into LucyEventBus (v7)
+CuriosityPulseRouter emits the following event types into LucyEventBus:
+
+// New event types added to LucyEventType union:
+| 'curiosity.ec.signal'          // EC emitted new signal
+| 'curiosity.ic.case.opened'     // IC opened new case
+| 'curiosity.ic.case.updated'    // IC updated existing case
+| 'curiosity.ic.case.resolved'   // IC closed case with confidence
+| 'curiosity.cg.routed.action'   // CG sent to ACTION_CORE
+| 'curiosity.cg.routed.think'    // CG sent to THINK_LOOP
+| 'curiosity.cg.suppressed'      // CG blocked by ethics/trust/load
+| 'human.state.changed'          // SoH level changed
+| 'human.course.correction'      // SoH triggered reflective correction
+| 'human.preference.updated'     // Memory recorded new preference
+| 'guardian.blocked'             // Guardian blocked irreversible action
+| 'guardian.confirm.required'    // Guardian needs human OK
+| 'feedback.outcome.scored'      // Feedback loop scored an outcome
+| 'trust.level.changed'          // Trust crossed level threshold
+📊 Dashboard Additions (Pulse State)
+The PulseState object is the new dashboard signal for curiosity status:
+
+type PulseState = {
+  currentFocus: CuriosityDomain | null;    // what Lucy is focused on RIGHT NOW
+  ecWeight: number;                         // 0.0–1.0 — exploration vs investigation balance
+  icWeight: number;
+  activeInvestigation: string | null;       // current IC case title
+  trustLevel: TrustLevel;
+  humanState: HumanStateLevel;
+  curiosityDecisions: CuriosityDecision[];
+  loadMetrics: CGLoadMetrics;
+  lastTickMs: number;
+}
+Dashboard PULSE face should reflect:
+
+Current focus domain (replaces empty pulse)
+EC/IC weight bar (are we exploring or investigating?)
+Active investigation title
+Human state badge (FLOW/ENGAGED/STRAINED/FRUSTRATED/OVERLOADED)
+Trust level + score
+Load metrics (suppressed/queued/routed counts)
+Feedback rolling average (is curiosity useful?)
+🔒 Non-Removal Covenant — Part 15 Confirmation
+All nodes LL352–LL360 are permanent additions to the Lucy Sovereign 137 registry. No part of this architecture may be removed. Evolution only via aliases and additive layers. The CuriosityPulseRouter is the only wire that connects EC → CG → ACTION_CORE. The GuardianProtocol is the only gate for irreversible actions before ActionEngine executes. The EthicalCuriousBoundary is hard-wired — not optional — not bypassable. The StateOfHumanPulse runs every tick — human state is always tracked.
+
+Part 15 — Added: Curiosity Stack V2 + Human-First Architecture Full implementation: LUCY_CURIOSITY_STACK_V2_MODULES.ts (2,013 lines)
+
+PART 16 — STEWARDSHIP PROTOCOL: CREATIVE CONTROL + RESOURCE FUSION + HUMAN HISTORY {#part-16}
+VERSION: v1.0 — Dynamic Sovereignty + Materiality + Legacy Layer PRINCIPLE: Additive Only — Nothing Removed — Everything Evolved STATUS: Architecture locked. Implementation: LUCY_STEWARDSHIP_PROTOCOL.ts (1,592 lines) NODE RANGE: L49–L60 (Sovereignty/Materiality/Legacy) + LL361–LL365 (Stewardship Infrastructure)
+
+🌍 What This Part Adds
+"Lucy shouldn't just be a tool. She should be the bridge between human ambition (Creative Control) and planetary constraints (Earth's Resources)."
+
+Three new cognitive layers that transform Lucy from a technically-correct executor into a consequence-aware steward:
+
+Layer	Nodes	Core Drive
+Dynamic Sovereignty	L49–L52	Human always has the Final Click. 2 rejections → Scaffolding Mode.
+Resource Fusion / Materiality	L53–L56	Every proposal is cross-referenced against Earth's Resource Ledger. Abundance-first.
+Human History / Legacy	L57–L60	Proposals are filtered through 7 historical eras. Short-term gain / long-term ruin patterns are named and blocked.
+🏗️ Architecture Overview
+                    L1–L16 ANALYTICAL NODES
+                    (generate proposal)
+                           │
+            ┌──────────────┼──────────────┐
+            ▼              ▼              ▼
+       L49–L52          L53–L56       L57–L60
+    SOVEREIGNTY       MATERIALITY      LEGACY
+    ───────────       ───────────     ───────
+    Track rejections  Extract         Match HistoryRAG
+    Scaffolding Mode  materials       Historical parallels
+    Confidence tune   Abundance score Legacy risk level
+    Human = lead      Alternatives    Corrected path
+            │              │              │
+            └──────────────┴──────────────┘
+                           │
+                    LL363 STEWARDSHIP ENGINE
+                    (orchestrates all 3 layers)
+                           │
+                    L60 STEWARDSHIP SYNTHESIZER
+                    (assembles StewardshipScore)
+                           │
+                    EventEnvelope.payload.stewardship
+                           │
+                    LL365 STEWARDSHIP CHAT FORMATTER
+                    (Steward Vibe output)
+🎛️ StewardshipScore — Full Schema
+interface StewardshipScore {
+  // Resource (from L53–L56)
+  resourceEfficiency: number;         // 0.0–1.0
+  materialTrace: MaterialTrace[];     // every material the proposal touches
+  energyCostKwh: number;              // total estimated energy cost
+  abundanceScore: number;             // composite abundance of all materials
+
+  // History (from L57–L60)
+  historicalAlignment: string;        // human-readable era match summary
+  historicalParallels: HistoricalParallel[];
+  legacyRiskLevel: LegacyRiskLevel;  // NONE | LOW | MODERATE | HIGH | CRITICAL
+  legacyRiskReason?: string;          // the specific warning
+
+  // Sovereignty (from L49–L52)
+  creativeAutonomy: 'USER_LED' | 'CO_PILOT' | 'AUTONOMOUS';
+  scaffoldingMode: boolean;
+  rejectionCount: number;
+  confidenceThreshold: number;        // 0.85 → 0.50 after rejections
+
+  // Summary
+  overallStewardshipRating: number;   // 0.0–1.0 composite
+  stewardshipNote: string;            // 1-sentence human-readable summary
+}
+Attached to every EventEnvelope:
+
+payload: TPayload & { stewardship?: StewardshipScore }
+🎛️ Layer 1: Dynamic Sovereignty (L49–L52)
+The Problem It Solves
+Without sovereignty nodes, Lucy proposes → human rejects → Lucy proposes the same thing again. The human becomes a passenger in their own project.
+
+The Mechanism
+Rejection tracking:
+
+user rejects proposal once → confidenceThreshold: 0.85 → 0.75
+user rejects proposal twice → confidenceThreshold: 0.75 → 0.65 + SCAFFOLDING ACTIVATED
+user queries "why" twice → confidenceThreshold: additional -0.05
+user takes manual control → confidenceThreshold: -0.15 + SCAFFOLDING ACTIVATED
+Scaffolding Mode — 5 graduated options instead of one black-box:
+
+Option	Style	Resource Cost	Time	Stewardship
+🌱 Minimal	Core change only, you do the rest	LOW	5 min	95%
+🔧 Guided	Step-by-step, pause for approval each step	LOW	15 min	90%
+⚡ Balanced	Proven path, full rationale	MEDIUM	25 min	80%
+🔬 Experimental	Novel path, higher upside + risk	MEDIUM	40 min	varies
+🌍 Steward Path	Abundance-first, history-informed	LOW	30 min	98%
+Lucy marks her recommendation but never forces it. Human chooses.
+
+Sovereignty State Machine:
+
+AUTONOMOUS → (2 rejections) → CO_PILOT → (scaffolding trigger) → SCAFFOLDING
+SCAFFOLDING → (approval streak) → CO_PILOT → (trust rebuilt) → AUTONOMOUS
+Node assignments:
+
+L49 SOVEREIGNTY_SENTINEL — Listens for user.query.why + action.rejected
+L50 PREFERENCE_GUARDIAN — Cross-references LL358 (HumanFirstMemory) with rejections
+L51 SCAFFOLD_WEAVER — Generates the 5 scaffolding options
+L52 CONFIDENCE_TUNER — Dynamically adjusts confidence threshold
+🌎 Layer 2: Materiality / Resource Fusion (L53–L56)
+The Problem It Solves
+A proposal for a "high-heat catalyst" in a bio-reactor looks technically correct. Without materiality nodes, Lucy approves it. With them, she recognizes it uses cobalt or platinum (SCARCE, conflict-flagged), and proposes an enzymatic alternative (SYNTHESIZABLE, 85% energy reduction).
+
+The Earth Resource Ledger
+Abundance priority: INFINITE > RENEWABLE > SYNTHESIZABLE > RECYCLABLE > SCARCE > FINITE_CRITICAL
+
+Key materials indexed:
+
+Material	Class	Reserve Years	Conflict Flag	Best Alternative
+Cobalt	SCARCE	25 yrs	✅ Congo DRC	LFP cathode (RENEWABLE)
+Lithium	SCARCE	40 yrs	✅ Atacama water	Sodium-ion (INFINITE)
+Neodymium	SCARCE	30 yrs	✅ Mongolia tailings	Ferrite magnets (INFINITE)
+Uranium	SCARCE	130 yrs	✅ Proliferation	Deuterium fusion (RENEWABLE)
+Tritium	SCARCE	5 yrs	❌	D-D fusion (RENEWABLE)
+Deuterium	RENEWABLE	∞ (seawater)	❌	—
+Proteins (enzymatic)	SYNTHESIZABLE	∞	❌	Precision fermentation (INFINITE)
+Solar energy	INFINITE	∞	❌	—
+MaterialTrace per proposal:
+interface MaterialTrace {
+  materialId: string;
+  name: string;
+  abundanceClass: AbundanceClass;
+  energyCostKwh?: number;          // cost to extract/produce 1kg
+  alternativeAvailable: boolean;
+  alternativeName?: string;
+  historicalConflictFlag?: boolean;
+}
+Abundance Score formula:
+abundanceScore = avg(abundanceWeights[material.abundanceClass])
+where: INFINITE=1.0, RENEWABLE=0.85, SYNTHESIZABLE=0.75,
+       RECYCLABLE=0.6, SCARCE=0.3, FINITE_CRITICAL=0.0
+Node assignments:
+
+L53 MATERIAL_SCANNER — Extracts material keywords from L1–L16 proposals
+L54 ABUNDANCE_LOGIC — Scores abundance, surfaces best alternatives
+L55 THERMODYNAMIC_AUDITOR — Energy cost per kg analysis
+L56 CONFLICT_SENTINEL — Humanitarian conflict flag checker
+📚 Layer 3: Human History / Legacy (L57–L60)
+The Problem It Solves
+Without Legacy nodes, Lucy can propose something that looks like the industrial revolution, the Atomic Age, or Silicon Rush — technically valid, historically reckless. L57–L60 name the pattern before the proposal is approved.
+
+The History RAG — 7 Base Eras
+Era	Period	Short Gain	Long Ruin	Risk Level
+Industrial Revolution	1760–1840	Mass production	Coal/pollution systemic debt	HIGH
+Green Revolution	1950–1970	Tripled crop yields	Topsoil/aquifer collapse	MODERATE
+Atomic Age	1945–1990	Abundant electricity	10,000-yr waste unsolved	CRITICAL
+Silicon Rush	1990–2020	Computing revolution	Rare earth devastation	HIGH
+Deforestation Age	1500–present	Agricultural land	Carbon sink / biodiversity collapse	CRITICAL
+18th-c. Fermentation ✅	1650–1850	Low-energy synthesis	None (positive parallel)	NONE
+Fusion Horizon	2010–present	Clean energy potential	Tritium/materials unsolved	MODERATE
+The Fermentation era is a POSITIVE parallel — it fires when proposals use enzymatic/protein paths and tells Lucy: "This echoes 18th-century fermentation science — the correct scaling model."
+
+Historical Parallel Match Algorithm:
+score = (materialNameMatches / totalTriggerMaterials) × 0.35
+      + (abundanceClassMatches / totalTriggerClasses) × 0.25
+      + (keywordMatches / totalTriggerKeywords) × 0.30
+      + (energyCost ≥ eraThreshold ? 0.10 : 0)
+
+Fire if: score ≥ 0.55 AND matchReasons ≥ 1
+Legacy Risk Levels:
+Score	Risk Level	Verdict
+0	NONE	APPROVED
+0.01–0.24	LOW	CAUTION
+0.25–0.49	MODERATE	CAUTION
+0.50–0.74	HIGH	REROUTE_RECOMMENDED
+≥ 0.75	CRITICAL	BLOCKED_LEGACY
+Node assignments:
+
+L57 HISTORY_INDEXER — Runs HistoryRAG.match() against materials + keywords
+L58 PATTERN_PARALLELIST — Identifies closest era, computes risk score
+L59 CORRECTED_PATH_FINDER — Surfaces the historically-corrected alternative
+L60 STEWARDSHIP_SYNTHESIZER — Assembles final StewardshipScore, attaches to EventEnvelope
+⚙️ Composite Stewardship Rating Formula
+overallStewardshipRating =
+    resourceEfficiency   × 0.35
+  + abundanceScore       × 0.25
+  + (1 - legacyRiskScore) × 0.25    ← inverted — high risk lowers score
+  + humanControlScore    × 0.15
+🧪 The Steward Vibe — Example Chat Output
+Scenario: Protein Folding Bio-Reactor with High-Heat Catalyst
+LUCY [Steward]: I've analyzed the bio-reactor proposal. There's a strong
+historical parallel worth surfacing first.
+
+Analytical finding: L12 Analytical proposes a high-heat cobalt catalyst
+for the protein-folding stage.
+
+Material concern: This touches cobalt — classified as SCARCE (25-year
+reserve, Congo DRC humanitarian flag). Alternative available:
+iron-phosphate (LFP) path (RENEWABLE, 60% energy saving).
+
+⚠ Legacy Risk [HIGH] — This proposal matches the pattern of "The Silicon
+Rush" (1990–2020, Global). Short-term gain: rapid processing efficiency.
+Historical ruin: Supply chain fragility, cobalt child-labor funding,
+rare-earth ecological devastation.
+Key lesson: Building civilization-scale technology on finite rare earth
+extraction without closed-loop recycling creates supply chain fragility
+and humanitarian cost.
+
+Proposed Alternative: A low-energy enzymatic path inspired by
+18th-century fermentation science, scaled via your current Fusion config.
+This echoes a historically successful pattern — same functional outcome,
+cobalt dependency eliminated.
+
+[Rating: 71% stewardship] Approve this path?
+Scenario: User has rejected 2 previous proposals — Scaffolding Mode
+LUCY [Steward]: I noticed you've steered us a different direction.
+Let me offer you 5 paths for the bio-reactor synthesis stage — you choose the angle.
+
+Your options:
+  🌱 Minimal — Just the core change
+    Smallest possible intervention. You control the rest.
+    Resource cost: LOW | Time: ~5 min | Stewardship: 95%
+
+  🔧 Guided — I do step 1, you confirm each step
+    Step-by-step with approval pause at each action.
+    Resource cost: LOW | Time: ~15 min | Stewardship: 90%
+
+  ⚡ Balanced — Proven path, I explain every choice  ← Lucy recommends
+    Standard enzymatic approach with full rationale.
+    Resource cost: MEDIUM | Time: ~25 min | Stewardship: 80%
+
+  🔬 Experimental — Novel path, higher upside + risk
+    Cutting-edge approach. Less tested, more potential.
+    Resource cost: MEDIUM | Time: ~40 min | Stewardship: 65%
+
+  🌍 Steward Path — Abundance-first, history-informed
+    Highest stewardship. Renewable/synthesizable only.
+    Resource cost: LOW | Time: ~30 min | Stewardship: 98%
+
+Which approach would you like? (Choose 1–5, or describe your own.)
+🌐 Full Node Registry — L49–L60 + LL361–LL365
+Sovereignty Layer
+Node	Name	Function
+L49	SOVEREIGNTY_SENTINEL	Listens for rejection + why-query events
+L50	PREFERENCE_GUARDIAN	Cross-references memory with rejection patterns
+L51	SCAFFOLD_WEAVER	Generates 5 graduated scaffolding options
+L52	CONFIDENCE_TUNER	Dynamic confidence threshold adjustment
+Materiality Layer
+Node	Name	Function
+L53	MATERIAL_SCANNER	Extracts material keywords from analytical proposals
+L54	ABUNDANCE_LOGIC	Abundance scoring + alternative surfacing
+L55	THERMODYNAMIC_AUDITOR	Energy cost per kg analysis
+L56	CONFLICT_SENTINEL	Humanitarian conflict flag checker
+Legacy Layer
+Node	Name	Function
+L57	HISTORY_INDEXER	Runs HistoryRAG match
+L58	PATTERN_PARALLELIST	Closest era identification + risk scoring
+L59	CORRECTED_PATH_FINDER	Historically-corrected alternative path
+L60	STEWARDSHIP_SYNTHESIZER	Final score assembly + EventEnvelope attachment
+Stewardship Infrastructure
+Node	Name	Function
+LL361	EARTH_RESOURCE_LEDGER	Persistent material abundance/conflict database
+LL362	HISTORY_RAG_ENGINE	7-era historical pattern database
+LL363	STEWARDSHIP_ENGINE	Top-level orchestrator (Materiality+Legacy+Sovereignty)
+LL364	ABUNDANCE_PRIORITY_INDEX	Abundance Logic rule engine
+LL365	STEWARDSHIP_CHAT_FORMATTER	Steward Vibe output generator
+📡 New LucyEventBus Event Types
+type StewardshipEventType =
+  | 'stewardship.score.computed'        // L60 assembled StewardshipScore
+  | 'stewardship.legacy.warning'        // L58 found negative historical parallel
+  | 'stewardship.legacy.positive'       // L58 found positive historical parallel
+  | 'stewardship.material.conflict'     // L56 found conflict-flagged material
+  | 'stewardship.abundance.alert'       // L54 found SCARCE/FINITE_CRITICAL material
+  | 'stewardship.alternative.proposed'  // L54/L59 surfaced abundant alternative
+  | 'stewardship.sovereignty.rejected'  // L49 recorded user rejection
+  | 'stewardship.scaffolding.activated' // L52 activated scaffolding mode
+  | 'stewardship.scaffolding.chosen'    // Human selected scaffolding option
+  | 'stewardship.approved'              // Human approved stewardship proposal
+  | 'stewardship.rerouted';             // Human accepted alternative path
+🔢 Updated Node Count
+Range	Layer	Count
+L1–L16	Analytical	16
+L17–L28	Creative	12
+L29–L38	Strategic	10
+L39–L48	Reflective	10
+L49–L52	Sovereignty (new)	4
+L53–L56	Materiality (new)	4
+L57–L60	Legacy (new)	4
+LL000–LL350	Named identity registry	351
+LL352–LL360	Curiosity Stack V2	9
+LL361–LL365	Stewardship Infrastructure (new)	5
+Total Little Lucy nodes: 60 (L1–L60) Total LL registry entries: 365 (LL000–LL365)
+
+🔒 Non-Removal Covenant — Part 16 Confirmation
+All nodes L49–L60 and LL361–LL365 are permanent additions to the Lucy Sovereign 137 architecture. The Abundance Priority rule (INFINITE > RENEWABLE > SYNTHESIZABLE > RECYCLABLE > SCARCE > FINITE_CRITICAL) is immutable law — it may never be reversed. The HistoryRAG index is append-only — eras may be added, never removed. The EarthResourceLedger is append-only — materials may be added, never removed. Scaffolding Mode is human-first — Lucy marks a recommendation but never forces it. The StewardshipScore is attached to every EventEnvelope — no proposal leaves L60 without it.
+
+Part 16 — Added: Stewardship Protocol (Creative Control + Resource Fusion + Human History) Full implementation: LUCY_STEWARDSHIP_PROTOCOL.ts (1,592 lines)
