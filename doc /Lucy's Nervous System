@@ -1,0 +1,249 @@
+LucyEventBus — Lucy's Nervous System
+export type LucyEventType =
+  | 'planetary.seismic.detected'
+  | 'planetary.weather.alert'
+  | 'planetary.hydrology.flood_stage'
+  | 'planetary.ocean.sst_anomaly'
+  | 'planetary.wind.supercell_risk'
+  | 'planetary.radiation.spike'
+  | 'planetary.solar.geomagnetic_storm'
+  | 'planetary.volcano.alert'
+  | 'home.device.state_changed'
+  | 'home.security.alert'
+  | 'home.energy.anomaly'
+  | 'home.camera.motion'
+  | 'system.thermal.warning'
+  | 'system.swarm.node_down'
+  | 'game.fivem.server_pressure'
+  | 'user.query.why'
+  | 'user.query.check'
+  | 'user.command.home'
+  | 'curiosity.case.opened'
+  | 'curiosity.case.updated'
+  | 'reasoning.rationale.created'
+  | 'action.proposed'
+  | 'action.approved'
+  | 'action.executed'
+  | 'action.rejected'
+  | 'debug.trace';
+
+export interface EventEnvelope<TPayload = any> {
+  id: string;
+  type: LucyEventType;
+  sourceEngine: string;
+  timestamp: number;
+  priority: LucyEventPriority;
+  confidence: number;
+  payload: TPayload;
+  traceId: string;
+  rationaleRef?: string;
+  parentEventId?: string;
+  tags?: string[];
+}
+ParallelEngineRuntime — Supervised Parallel Engines
+Each engine registers with ParallelEngineRuntime. Runtime manages:
+
+Engine heartbeats and health monitoring
+Budget allocation (CPU time, memory allowance)
+Failure policies (restart, suspend, alert-and-continue)
+Engine priority during high-load scenarios
+Graceful shutdown sequencing
+ActionEngine — Single Execution Authority
+interface ActionProposal {
+  id: string;
+  proposedBy: string;         // which engine
+  actionType: string;
+  target: string;
+  payload: any;
+  rationaleRef: string;       // links to DeltaVault rationale
+  riskLevel: BuilderRiskLevel;
+  requiresApproval: boolean;
+  rollbackPlan?: string;
+}
+ActionEngine routing:
+
+Policy check (HomeSafetyPolicy / BuilderSafetyGate / GameModdingPolicy)
+Capability check (is Lucy deputized?)
+Look-Before-Leap simulation
+DeltaVault entry creation
+Execute
+ArtifactVault evidence record
+Outcome feedback to BuilderMemory
+Home Assistant Integration
+Supported device types:
+
+lights, locks, cameras, thermostat, sensors, plugs, garage, media, irrigation, scenes
+HomeSafetyPolicy hard rules:
+
+Never unlock doors without explicit Randy voice or text confirmation
+Never disable security cameras
+Never change thermostat below 60°F or above 85°F without confirmation
+Garage door commands require double-confirmation if it's after midnight
+Randy conversation interface:
+
+Randy: "Is the house okay?"
+Lucy:  "Yes. Front door locked. All lights off except kitchen. 
+        Thermostat at 72°F. No motion detected in last 2 hours."
+
+Randy: "Why did the garage door open?"
+Lucy:  "At 6:47 PM I detected your car in the driveway via motion sensor 
+        pattern match. I proposed opening the garage door. You approved via 
+        the mobile app at 6:47:12 PM. DeltaVault trace: trace_abc123."
+WhyQueryEngine + CheckRequestEngine
+Randy can ask:
+
+"Why are you seeing that?" → WhyQueryEngine retrieves rationale, evidence, causal chain, counterfactual from DeltaVault
+"Check this for me." → CheckRequestEngine routes question to event bus + appropriate feed/home/system engine
+"What changed?" → DeltaVault delta query
+"Check the seismic activity." → SeismicSentinel immediate query
+"What did you do and why?" → Full action log with rationale replay
+v7 Design Decisions (Locked In)
+Decision	Choice
+Engine Execution	ParallelEngineRuntime supervises all engines
+Nervous System	LucyEventBus with priority queue, subscribers, replay log, trace IDs
+Event Schema	EventEnvelope — id/type/source/timestamp/payload/confidence/rationaleRef
+Execution Authority	ActionEngine only; engines may only publish proposals
+Smart Home Backend	Home Assistant REST + WebSocket APIs
+Smart Device Scope	lights, locks, cameras, thermostat, sensors, plugs, garage, media, irrigation, scenes
+"Why?" Queries	WhyQueryEngine retrieves rationale, evidence, causal chain, counterfactual
+"Check X" Queries	CheckRequestEngine routes to event bus + feed/home/system engines
+Audit	Every event and action proposal carries DeltaVault trace ID
+PART 13 — v8 READINESS GAP PLAN (Builder OS + GameDev Mesh) {#part-13}
+The Big Missing Piece: Builder Operating System
+Lucy needs a dedicated BuilderOS layer — her development workbench.
+
+export interface BuilderOS {
+  projectArchitect: ProjectArchitect;
+  repoManager: RepoManager;
+  codeGenerator: CodeGenerator;
+  testRunner: TestRunner;
+  buildRunner: BuildRunner;
+  errorInterpreter: ErrorInterpreter;
+  assetPipeline: AssetPipeline;
+  packageExporter: PackageExporter;
+  documentationWriter: DocumentationWriter;
+  releaseManager: ReleaseManager;
+}
+ProjectGraph — Project Intelligence
+export interface ProjectGraph {
+  projectId: string;
+  rootPath: string;
+  projectType: 'fivem' | 'ue5' | 'gta5_map' | 'web' | 'python' | 'electron' | 'mixed';
+  files: ProjectFileNode[];
+  dependencies: DependencyNode[];
+  buildTargets: BuildTarget[];
+  runtimeEntrypoints: RuntimeEntrypoint[];
+  assetRefs: AssetReference[];
+  testSuites: TestSuiteRef[];
+  knownRisks: ProjectRisk[];
+}
+For FiveM: Lucy understands fxmanifest.lua, client scripts, server scripts, shared configs, NUI files, SQL migrations, dependencies, exports, events, commands, permissions, jobs, items, inventory, vehicles, maps, and framework integrations.
+
+For UE5: Lucy understands .uproject, plugins, modules, C++ classes, Blueprints, assets, maps, packaging config, target platforms, cooked content, and build logs.
+
+For GTA V maps: Lucy understands YMAP, YTYP, YDR, YDD, YTD, collision, LOD, MLO interiors, portals, occlusion, manifests, DLC pack layout, and streaming resources.
+
+Autonomous Coding Loop
+export class AutonomousCodingLoop {
+  async run(task: BuildTask): Promise<BuildResult> {
+    const plan = await this.projectArchitect.createPlan(task);
+    const graph = await this.repoManager.buildProjectGraph(task.projectPath);
+    const edits = await this.codeGenerator.generateEdits(plan, graph);
+    await this.repoManager.applyEdits(edits);
+    const build = await this.buildRunner.run(graph);
+    const tests = await this.testRunner.run(graph);
+
+    if (!build.success || !tests.success) {
+      const diagnosis = await this.errorInterpreter.diagnose(build, tests);
+      return this.run({ ...task, previousDiagnosis: diagnosis });
+    }
+
+    const docs = await this.documentationWriter.write(graph, plan);
+    const artifact = await this.packageExporter.package(graph);
+
+    return { success: true, graph, docs, artifact };
+  }
+}
+Important: Add maximum retry limit — stop after 5 failed attempts and ask Randy.
+
+FiveM Resource Builder Layer
+export interface FiveMResourceSpec {
+  name: string;
+  framework: 'standalone' | 'qbcore' | 'esx' | 'qbox';
+  language: 'lua' | 'typescript' | 'javascript' | 'mixed';
+  hasNui: boolean;
+  dependencies: string[];
+  serverEvents: FiveMEventSpec[];
+  clientEvents: FiveMEventSpec[];
+  exports: FiveMExportSpec[];
+  commands: FiveMCommandSpec[];
+  sqlMigrations: SqlMigrationSpec[];
+  permissions: PermissionSpec[];
+}
+Lucy understands: fxmanifest.lua, Lua client/server scripts, JavaScript/TypeScript resources, NUI HTML/CSS/React/Vue/Svelte frontends, server events, client events, exports, commands, ACE permissions, QBCore integration, ESX integration, ox_lib, ox_inventory, ox_target, oxmysql, vehicle resources, job systems, economy systems, housing systems, dispatch/police/EMS mechanics, inventory items, SQL migrations, config-driven resources, localization, anti-exploit validation, and resource packaging.
+
+UE5 Builder Layer
+Lucy can build:
+
+UE5 project scaffolds
+UE5 C++ classes
+UE5 Blueprint nodes (via editor automation)
+UE5 packaging config
+UE5 Cesium integration
+Asset import pipelines
+Release packages
+GTA V / FiveM Map Mod Builder
+Lucy understands and can build:
+
+YMAP (entity placement)
+YTYP (archetype definitions)
+YDR, YDD (model files via Blender pipeline)
+YTD (texture dictionaries)
+MLO interiors with portals + occlusion
+DLC pack layout and manifests
+FiveM map streaming resources
+CodeWalker integration
+OpenIV asset pipeline
+Builder Trust Layer (Full Flow)
+User Request
+  → Intent + Domain Classification
+  → LongHorizonBuilderPlanner
+  → ToolchainManager Readiness Check
+  → GameModdingPolicy Check
+  → BuilderSafetyGate Risk Score
+  → ProjectGraph Inspection
+  → Specialist Builder Agents Propose Work
+  → BuilderOS Sandbox Edit Loop
+  → BuildRunner / TestRunner
+  → RuntimeLab Replayable Session
+  → VisualVerification Confidence Score
+  → ArtifactVault Evidence Package
+  → BuilderMemory Outcome Record
+  → ActionEngine Approval/Execution Gate
+  → ReleaseManager / Rollback Snapshot
+Specialist Builder Agents
+Agent	Domain
+ArchitectAgent	Project structure, design decisions
+FiveMAgent	FiveM Lua/TS resources, QBCore/ESX/ox
+UE5Agent	Unreal Engine 5 C++ + Blueprints
+MapAgent	GTA V/FiveM map mods, YMAP/YTYP/MLO
+DBAgent	SQL migrations, database schema
+UIAgent	NUI HTML/CSS, React/Vue/Svelte frontends
+SecurityAgent	ACE permissions, anti-exploit checks
+ReleaseAgent	Packaging, versioning, release notes
+All agents propose. ActionEngine executes.
+
+PART 14 — BUILD READINESS CRITERIA & FINAL LOCK STATEMENT {#part-14}
+Build Readiness Criteria
+Lucy-core-AI is ready to start implementation when these conditions are satisfied:
+
+The source-of-truth blueprint is locked. ✅
+The node identity registry is extended to LL350. ✅
+The code explanation/debug standard is mandatory. ✅
+The private-build/public-release distinction is clear. ✅
+The Builder Trust Layer is part of the default flow. ✅
+ActionEngine remains the only execution authority. ✅
+Bubble Bath remains preserved and upgraded. ✅
+The v8 BuilderOS plan is accepted. ✅
+Every new code block in the implementation will include what/why/how/change/debug. ✅
+Randy confirms we are ready to begin the actual build.
