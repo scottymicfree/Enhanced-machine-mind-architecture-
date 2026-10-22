@@ -1,4 +1,8 @@
 # Enhanced-machine-mind-architecture-
+
+> 🌐 **Fenton Lab official website:** [fentonlabai.pages.dev](https://fentonlabai.pages.dev/)  
+> Planned primary domain: `fentonlabai.com` (custom-domain connection pending).
+
 Neruo architecture inspiration 
 Lucy Stem Cell Protocol - Implementation Guide
 # Major Lucy — Kernel + E.M.M.A. (Architecture / Spec Only)
